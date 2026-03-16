@@ -26,8 +26,4 @@ Built with a sleek, enterprise-grade Next.js frontend and a highly concurrent Go
 - Server-Sent Events (SSE) architecture for live data streaming.
 
 
-**Frontend (Vercel)**
-1. Connect your GitHub repository to Vercel and create a new Project.
-2. Set the Root Directory to `frontend`.
-3. Framework Preset: `Next.js`.
-4. Add the `NEXT_PUBLIC_BACKEND_URL` environment variable, pointing to your live Render backend URL (e.g., `https://docintel-backend.onrender.com`).
+
