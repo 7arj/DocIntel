@@ -51,13 +51,26 @@ func extractPDFText(content []byte) (string, error) {
 			continue
 		}
 
-		// Apply heuristic spacing for PDFs (like Canva or resume builders) 
-		// that use absolute X/Y coordinates instead of spacebar characters
+		// Filter out massive base64/hex inline image blobs by splitting and checking length
+		var cleanWords []string
+		for _, w := range strings.Fields(text) {
+			if len(w) < 40 { // Normal English words never exceed 40 characters
+				cleanWords = append(cleanWords, w)
+			}
+		}
+		text = strings.Join(cleanWords, " ")
+
+		// Apply heuristic spacing for PDFs
 		text = reCamelCase.ReplaceAllString(text, "$1 $2")
 		text = reNumAlpha.ReplaceAllString(text, "$1 $2")
 		text = reAlphaNum.ReplaceAllString(text, "$1 $2")
 		
-		sb.WriteString(text)
+		// Sanitize unprintable characters that disrupt LLM processing heavily
+		for _, r := range text {
+			if (r >= 32 && r != 127) || r == '\n' || r == '\t' {
+				sb.WriteRune(r)
+			}
+		}
 		sb.WriteString("\n\n")
 	}
 

@@ -214,24 +214,40 @@ func parseAndEmitStructured(rawJSON, docID, filename string, sendSSE SSEWriter) 
 
 	var analysis models.DocumentAnalysis
 	if err := json.Unmarshal([]byte(cleaned), &analysis); err != nil {
-		fmt.Println("❌ FAILED TO PARSE RAW JSON ❌")
-		fmt.Println("--- RAW JSON LENGTH:", len(cleaned))
-		if len(cleaned) > 500 {
-			fmt.Println("--- END OF JSON:", cleaned[len(cleaned)-500:])
-		} else {
-			fmt.Println("--- FULL JSON:", cleaned)
+		
+		// Attempt robust JSON repair for abrupt stream cutoffs
+		repaired := false
+		
+		suffixes := []string{
+			"", "}", "]}", "}]}", "}]}]}", "}]}]}]}", "}]}]}]}]}",
 		}
 		
-		// Try to find JSON within the text
-		start := strings.Index(cleaned, "{")
-		end := strings.LastIndex(cleaned, "}")
-		if start >= 0 && end > start {
-			cleaned = cleaned[start : end+1]
-			if err2 := json.Unmarshal([]byte(cleaned), &analysis); err2 != nil {
-				return fmt.Errorf("failed to parse Gemini response: %w", err2)
+		// Try truncating up to 150 characters from the end to strip hanging keys/commas
+		for drop := 0; drop < 150 && drop < len(cleaned); drop++ {
+			testStr := cleaned[:len(cleaned)-drop]
+			testStr = strings.TrimRight(testStr, " \n\r\t,:")
+			
+			for _, suf := range suffixes {
+				if err2 := json.Unmarshal([]byte(testStr+suf), &analysis); err2 == nil {
+					repaired = true
+					break
+				}
+				if err2 := json.Unmarshal([]byte(testStr+"\""+suf), &analysis); err2 == nil {
+					repaired = true
+					break
+				}
 			}
-		} else {
-			return fmt.Errorf("failed to parse Gemini response: %w", err)
+			if repaired {
+				break
+			}
+		}
+
+		if !repaired {
+			fmt.Println("❌ FAILED TO PARSE JSON. RAW CONTENT DUMP:")
+			fmt.Println("--------------------------------------------------")
+			fmt.Println(cleaned)
+			fmt.Println("--------------------------------------------------")
+			return fmt.Errorf("failed to parse Gemini response: unexpected end of JSON input")
 		}
 	}
 
