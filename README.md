@@ -4,7 +4,7 @@ DocIntel is a modern, full-stack Document Intelligence Platform that leverages A
 
 Built with a sleek, enterprise-grade Next.js frontend and a highly concurrent Go backend, it uses **Server-Sent Events (SSE)** to stream real-time insights from the Gemini 2.5 Flash API directly to the user's dashboard.
 
-## ✨ Key Features
+##  Key Features
 
 - **Real-Time Streaming Analysis:** Watch as the AI streams structural breakdowns, executive summaries, and key points to the UI in real-time.
 - **Flawless Entity Extraction:** Identifies and extracts people, organizations, locations, dates, and events, allowing click-to-highlight navigation within the original document viewer.
@@ -12,7 +12,7 @@ Built with a sleek, enterprise-grade Next.js frontend and a highly concurrent Go
 - **Enterprise Design System:** Features a highly professional, responsive "Dark Emerald" B2B SaaS UI built with Tailwind CSS and Framer Motion.
 - **Robust PDF Parsing:** Utilizes pure-Go heuristic extraction to perfectly preserve word boundaries and spacing from complex PDF layouts.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 **Frontend:**
 - [Next.js 14](https://nextjs.org/) (App Router, React, TypeScript)
@@ -25,47 +25,5 @@ Built with a sleek, enterprise-grade Next.js frontend and a highly concurrent Go
 - [Supabase](https://supabase.com/) (PostgreSQL persistence & telemetry)
 - Server-Sent Events (SSE) architecture for live data streaming.
 
-## 🚀 Local Deployment
 
-### 1. Start the Go Backend
-The backend runs on port `8080`. It requires your Gemini API key and Supabase credentials.
 
-```bash
-cd backend
-# Create your .env file
-cp .env.example .env
-
-# Start the server
-go run main.go
-```
-
-### 2. Start the Next.js Frontend
-The frontend runs on port `3000`.
-
-```bash
-cd frontend
-# Install dependencies
-npm install
-
-# Start the development server
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## 🌍 Production Deployment
-
-To take DocIntel live on the internet, deploy the decoupled architecture to platforms optimized for their respective tech stacks.
-
-**Backend (Render.com)**
-1. Connect your GitHub repository to Render and create a new Web Service.
-2. Set the Root Directory to `backend`.
-3. Set the Environment to `Go`.
-4. Build Command: `go build -o main .`
-5. Start Command: `./main`
-6. Add your `.env` variables to the Render dashboard.
-
-**Frontend (Vercel)**
-1. Connect your GitHub repository to Vercel and create a new Project.
-2. Set the Root Directory to `frontend`.
-3. Framework Preset: `Next.js`.
-4. Add the `NEXT_PUBLIC_BACKEND_URL` environment variable, pointing to your live Render backend URL (e.g., `https://docintel-backend.onrender.com`).
